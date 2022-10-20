@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "empleados-917cb": {
+      "hosting": {
+        "empleados": [
+          "empleados-917cb"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "empleados-917cb"
+  }
+}
