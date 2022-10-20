@@ -1,0 +1,28 @@
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <span class="h3">Listado de Usuarios</span>
+            <!-- El router link para que el botton nos mueva a crear empleado -->
+            <button class="btn btn-dark btn-lg float-end" routerLink="/create-empleado">Agregar</button>
+            <table class="table table-success table-striped-columns mt-4">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let users of usuarios">
+                    <tr>
+                        <td>{{users.email}}</td>
+                        <td>{{users.username}}</td>
+                        <td>{{users.password}}</td>
+                        <!-- <td><i class="fa fa-pencil-square-o fa-lg text-info mx-2" aria-hidden="true"></i>
+                            <i class="fa fa-trash fa-lg text-danger" aria-hidden="true"></i>
+                        </td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
