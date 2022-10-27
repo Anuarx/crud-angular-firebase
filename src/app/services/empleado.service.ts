@@ -10,6 +10,5 @@ export class EmpleadoService {
 
   agregarEmpleado(empleado: any): Promise<any> {
     return this.firestore.collection('empleados').add(empleado);
-
   }
 }
