@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { EmpleadoService } from 'src/app/services/empleado.service';
 
 @Component({
@@ -8,28 +15,40 @@ import { EmpleadoService } from 'src/app/services/empleado.service';
   styleUrls: ['./create-empleado.component.css'],
 })
 export class CreateEmpleadoComponent implements OnInit {
+  public get router(): Router {
+    return this._router;
+  }
+  public set router(value: Router) {
+    this._router = value;
+  }
   // createEmpleado: FormGroup;
   submitted: Boolean = false;
-  emailValidated: Boolean = false
+  emailValidated: Boolean = false;
+  loading: Boolean = false;
+  id: string | null;
+  texto = 'Agregar Empleado';
+  // ejArray: string[] = ["HOLA", "SOY", "UN", "ARRAY"]
 
-  ejArray: string[] = ["HOLA", "SOY", "UN", "ARRAY"]
+  nombre: FormControl = new FormControl('', Validators.required);
+  email: FormControl = new FormControl('', [
+    Validators.email,
+    Validators.required,
+  ]);
+  apellido: FormControl = new FormControl('', Validators.required);
+  documento: FormControl = new FormControl('', Validators.required);
+  salario: FormControl = new FormControl('', Validators.required);
+  fechaCreacion: FormControl = new FormControl(new Date());
+  fechaActualizacion: FormControl = new FormControl(new Date());
 
-  nombre: FormControl = new FormControl('', Validators.required)
-  email: FormControl = new FormControl('', [Validators.email, Validators.required])
-  apellido: FormControl = new FormControl('', Validators.required)
-  documento: FormControl = new FormControl('', Validators.required)
-  salario: FormControl = new FormControl('', Validators.required)
-  fechaCreacion: FormControl = new FormControl(new Date())
-  fechaActualizacion: FormControl = new FormControl(new Date())
-
-  constructor(private fb: FormBuilder,
-    private _empleadoService: EmpleadoService) {
-    // this.createEmpleado = this.fb.group({
-    //   nombre: ['', Validators.required],
-    //   apellido: ['', Validators.required],
-    //   documento: ['', Validators.required],
-    //   salario: ['', Validators.required]
-    // });
+  constructor(
+    private fb: FormBuilder,
+    private _empleadoService: EmpleadoService,
+    private _router: Router,
+    private toastr: ToastrService,
+    private aRoute: ActivatedRoute
+  ) {
+    this.id = this.aRoute.snapshot.paramMap.get('id');
+    console.log(this.id);
   }
 
   form: FormGroup = new FormGroup({
@@ -39,27 +58,14 @@ export class CreateEmpleadoComponent implements OnInit {
     documento: this.documento,
     salario: this.salario,
     fechaCreacion: this.fechaCreacion,
-    fechaActualizacion: this.fechaActualizacion
-  })
+    fechaActualizacion: this.fechaActualizacion,
+  });
 
   ngOnInit(): void {
-    // alert(new Date())
-
-    let ejArray2 = []
-
-    for (let i = 0; i < this.ejArray.length; i++) {
-      console.log(this.ejArray[i])
-    }
-
-    ejArray2 = this.ejArray.map((result, index) => {
-      return result
-    })
-
-    console.log(ejArray2, 'array2')
+    this.esEditar();
   }
 
   agregarEmpleado() {
-
     //Boolean = TRUE || FALSE
 
     // this.fechaCreacion.setValue(new Date())
@@ -68,17 +74,17 @@ export class CreateEmpleadoComponent implements OnInit {
     // OPERADOR || DEVUELVE TRUE SI UNO DE ELLOS ES TRUE SI AMBOS SON FALSE, DEVUELVE FALSE
 
     if (this.form.invalid || this.email.invalid) {
-      this.emailValidated = true
-      this.submitted = true
+      this.emailValidated = true;
+      this.submitted = true;
 
-      alert('Algo esta mal')
+      alert('Algo esta mal');
 
       setTimeout(() => {
-        this.emailValidated = false
-        this.submitted = false
-      }, 2000);
-      
-      return
+        this.emailValidated = false;
+        this.submitted = false;
+      }, 3000);
+
+      return;
     }
 
     // OPERADOR && DEVUELVE TRUE SI Y SOLO SI AMBOS SON TRUE SI NO FALSE
@@ -99,11 +105,32 @@ export class CreateEmpleadoComponent implements OnInit {
     //   return
     // }
 
-    this._empleadoService.agregarEmpleado(this.form.value)
+    this._empleadoService
+      .agregarEmpleado(this.form.value)
       .then(() => {
-        this.form.reset()
-      }).catch(error => {
-        console.log(error);
+        this.loading = true;
+        this.toastr.success(
+          'El empleado fue registrado con exito',
+          'Empleado registrado',
+          {
+            positionClass: 'toast-bottom-right',
+          }
+        );
+        this.loading = false;
+        this._router.navigate(['/list-empleados']);
+        // this.form.reset();
       })
+      .catch((error) => {
+        console.log(error);
+        this.loading = false;
+      });
+  }
+  esEditar() {
+    this.texto = 'Editar Empleado';
+    if (this.id !== null) {
+      this._empleadoService.getEmpleado(this.id).subscribe((data) => {
+        console.log(data);
+      });
+    }
   }
 }

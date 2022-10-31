@@ -9,13 +9,14 @@ const routes: Routes = [
   { path: 'list-empleados', component: ListEmpleadosComponent },
   { path: 'create-empleado', component: CreateEmpleadoComponent },
   { path: 'create-user', component: AuthenticationPageComponent },
+  { path: 'editEmpleado/:id', component: CreateEmpleadoComponent },
+
   // Importante poner esta linea a lo ultimo sino buguea todo y siempre va a ridereccionar a list-empleados
   { path: '**', redirectTo: 'list-empleados', pathMatch: 'full' },
-
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
